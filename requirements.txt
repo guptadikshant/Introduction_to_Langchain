@@ -1,0 +1,8 @@
+jupyter
+pandas
+numpy
+langchain
+huggingface_hub
+openai
+pinecone-client 
+chromadb
