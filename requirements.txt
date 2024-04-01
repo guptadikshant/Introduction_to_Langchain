@@ -2,6 +2,7 @@ jupyter
 pandas
 numpy
 langchain
+langchain-openai
 huggingface_hub
 openai
 pinecone-client 
