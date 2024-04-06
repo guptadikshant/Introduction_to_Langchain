@@ -28,7 +28,7 @@ AI:
 
 # intialize the streamlit app
 st.title("Simple ChatBot Demo")
-input_text = st.text_input("Please Enter Your Queries.......")
+# input_text = st.text_input("Please Enter Your Queries.......")
 
 # Session State Variable
 if 'chat_history' not in st.session_state:
@@ -45,11 +45,13 @@ conv_chain = LLMChain(
     verbose=True
 )
 
+input_text = st.chat_input(placeholder="Ask me anything!")
 
 if input_text:
-    llm_response = conv_chain(input_text)["text"]
-    message = {'human': input_text, 'AI': llm_response}
-    st.session_state.chat_history.append(message)
-    st.write(llm_response)
-
+    st.chat_message('human').write(input_text)
+    with st.chat_message("assistant")   :
+        llm_response = conv_chain(input_text)["text"]
+        message = {'human': input_text, 'AI': llm_response}
+        st.session_state.chat_history.append(message)
+        st.write(llm_response)
 
