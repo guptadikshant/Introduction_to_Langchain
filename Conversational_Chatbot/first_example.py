@@ -34,8 +34,12 @@ st.title("Simple ChatBot Demo")
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 else:
+    # Save context based on the user/assistant role and their content
     for message in st.session_state.chat_history:
-        conv_mem.save_context({"input": message["human"]}, {"output": message["AI"]})
+        conv_mem.save_context({"input": message["role"]}, {"output": message["content"]})
+        # Display the content for whichever role
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
 
 conv_chain = LLMChain(
@@ -48,10 +52,15 @@ conv_chain = LLMChain(
 input_text = st.chat_input(placeholder="Ask me anything!")
 
 if input_text:
-    st.chat_message('human').write(input_text)
-    with st.chat_message("assistant")   :
+    # displays the user's input 
+    st.chat_message('user').markdown(input_text) 
+    # save the user's input in the session and role will be user
+    st.session_state.chat_history.append({"role": 'user', "content": input_text}) 
+    with st.chat_message("assistant"):
         llm_response = conv_chain(input_text)["text"]
-        message = {'human': input_text, 'AI': llm_response}
+        # Save's the AI response and role will be of AI
+        message = {'role': 'assistant', 'content': llm_response}
+        # Save's its response in the session state
         st.session_state.chat_history.append(message)
         st.write(llm_response)
 
