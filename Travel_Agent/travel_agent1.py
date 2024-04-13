@@ -36,7 +36,10 @@ if 'chat_history' not in st.session_state:
 else:
     # Save context based on the user/assistant role and their content
     for message in st.session_state.chat_history:
-        conv_mem.save_context({"input": message["role"]}, {"output": message["content"]})
+        conv_mem.save_context(
+            {"input": message["role"]}, 
+            {"output": message["content"]}
+        )
         # Display the content for whichever role
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
