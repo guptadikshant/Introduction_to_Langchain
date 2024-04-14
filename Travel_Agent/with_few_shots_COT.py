@@ -19,8 +19,8 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
 # intialize the model
 llm_model = OpenAI(
     model="gpt-3.5-turbo-instruct",
-    temperature=0.5,
-    max_tokens=1000
+    temperature=0.4,
+    max_tokens=1500
 )
 
 # intialize the Memory
@@ -35,7 +35,7 @@ example_travel_prompt = PromptTemplate(
         in accurate, precise and point wise manner so that a customer easily understands the mode of transportation,
         fare for each mode of transportation, flight number, cab number, buses number and suggest the alternate route/mode of transportation
         if not present directly from source and destination. Your job is also not provide any incorrect or not feasible information which is
-        not important to customer.
+        not important to customer. Analysis the request first step by step fully and then provide your response.
         {travel_query} \n {travel_response}
 """
 )
@@ -81,7 +81,7 @@ if input_text:
     # saves the user's input in the session and role will be of user
     st.session_state.chat_history.append({"role": "user", "content": input_text})
     with st.chat_message("assistant"):
-        llm_response = travel_chain(input_text)["text"]
+        llm_response = travel_chain.invoke({"travel_query": input_text})["text"]
         # Save's the LLM response and role will be of assistant (AI)
         st.session_state.chat_history.append({"role": "assistant", "content": llm_response})
-        st.write(llm_response)
+        st.markdown(llm_response)
