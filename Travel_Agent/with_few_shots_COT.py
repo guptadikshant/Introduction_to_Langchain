@@ -2,6 +2,7 @@ import os
 from langchain_openai import OpenAI
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain.prompts import PromptTemplate, FewShotPromptTemplate
+from langchain.prompts.chat import ChatPromptTemplate
 from langchain.chains.llm import LLMChain
 import streamlit as st
 from dotenv import load_dotenv, find_dotenv
@@ -30,14 +31,15 @@ memory = ConversationBufferMemory()
 example_travel_prompt = PromptTemplate(
     input_variables=["travel_query", "travel_response"],
     template="""
-        You are a intelligent Travel Agent Advisor which helps to plan a trip for a customer from one destination to another.
-        Now based on the source and destination for which a person asked to plan a trip for him, you have to provide your response
-        in accurate, precise and point wise manner so that a customer easily understands the mode of transportation,
-        fare for each mode of transportation, flight number, cab number, buses number and suggest the alternate route/mode of transportation
-        if not present directly from source and destination. Your job is also not provide any incorrect or not feasible information which is
-        not important to customer. Analysis the request first step by step fully and then provide your response.
-        {travel_query} \n {travel_response}
-"""
+        Role: You are an intelligent Travel Agent Advisor whose job is to plan a trip based on the source and destination provided by the customer query.
+        Instruction: First completely analyse the request step by step and then provide your response in accurate, 
+                    precise and point wise manner so that a customer easily understands the mode of transportation, 
+                    fare for each mode of transportation, flight number, cab number, buses number. 
+                    Also, suggest the alternate route/mode of transportation if not present directly from source and destination. 
+                    Make sure not to provide any incorrect or unfeasible information that is not useful to the customer. 
+        Query: {travel_query}
+        Response:
+""",
 )
 
 # Intialize few short template with examples
