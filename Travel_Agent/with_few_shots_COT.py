@@ -2,7 +2,6 @@ import os
 from langchain_openai import OpenAI
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain.prompts import PromptTemplate, FewShotPromptTemplate
-from langchain.prompts.chat import ChatPromptTemplate
 from langchain.chains.llm import LLMChain
 import streamlit as st
 from dotenv import load_dotenv, find_dotenv
@@ -38,7 +37,7 @@ example_travel_prompt = PromptTemplate(
                     Also, suggest the alternate route/mode of transportation if not present directly from source and destination. 
                     Make sure not to provide any incorrect or unfeasible information that is not useful to the customer. 
         Query: {travel_query}
-        Response:
+        Response: {travel_response}
 """,
 )
 
