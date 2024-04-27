@@ -9,3 +9,4 @@ pinecone-client
 chromadb
 streamlit
 python-dotenv
+pypdf
