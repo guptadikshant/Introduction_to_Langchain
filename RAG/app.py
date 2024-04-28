@@ -1,42 +1,20 @@
 import os
-
 import streamlit as st
 from dotenv import find_dotenv, load_dotenv
-from utils import extract_zip, rag_pipeline
+from utils import rag_pipeline
 
 load_dotenv(find_dotenv())
 
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
 
-def get_extracted_file_path():
-    pass
+st.title("RAG Based Research QA Bot")
+input_text = st.text_input(label="Enter your questions here.")    
 
-def main():
-    extract_dir = "extracted_files"
-    st.title("RAG Based Research QA Bot")
-    uploaded_file = st.sidebar.file_uploader("Upload Research papers zip file", type="zip")
-    submitted = st.sidebar.button(label="upload")
-    
-    
+if input_text and "rag_qa_chain" not in st.session_state:
+    st.session_state.rag_qa_chain = rag_pipeline(os.path.join(os.getcwd(), "RAG", "ml_research_papers"))
+    print(">>>>>>> qa chain created <<<<<<<")
 
-    if uploaded_file and submitted:
-        st.sidebar.write("File uploaded")
-        os.makedirs(extract_dir, exist_ok=True)
-        extract_zip(uploaded_file, extract_dir)
-        print(">>>>>> zip file extracted <<<<<<")
-        chain = rag_pipeline(os.path.abspath(extract_dir))
-        print(">>>>>> qa chain created <<<<<<")
-        input_text = st.chat_input(placeholder="Please write your question here.")
-        if input_text:
-            if chain:
-                print(chain)
-                print(f"inside input text: {input_text}")
-                llm_resp = chain.invoke({"query": input_text})
-                st.write(llm_resp["result"])
-            else:
-                st.write("Please upload a research paper zip file to create the QA chain.")
-
-
-
-if __name__ == "__main__":
-    main()
+if "rag_qa_chain" in st.session_state:
+    rag_chain = st.session_state.rag_qa_chain
+    llm_response = rag_chain.invoke({"query": input_text})
+    st.write(llm_response["result"])
