@@ -1,11 +1,12 @@
 import os
 import zipfile
 
-from langchain.chains import RetrievalQA
+from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_openai import OpenAI, OpenAIEmbeddings
+from langchain.memory.buffer import ConversationBufferMemory
 
 
 def extract_zip(zip_file_path, extract_path):
@@ -26,29 +27,30 @@ def convert_docs_into_chunks(documents):
 
 def create_embeddings_and_store_vectordb(texts):
     persist_dir = "db"
-
     openai_embedding = OpenAIEmbeddings()
-
-    vectordb = Chroma.from_documents(
-        documents=texts,
-        embedding=openai_embedding,
-        persist_directory=persist_dir
-    )
-
-    vectordb.persist()
-
     vectordb = Chroma(
     persist_directory=os.path.abspath(persist_dir), 
     embedding_function=openai_embedding
 )
+    
+    if vectordb._collection.count() == 0:
+        vectordb = Chroma.from_documents(
+            documents=texts,
+            embedding=openai_embedding,
+            persist_directory=persist_dir,
+            collection_name="RAG"
+        )
+
+        vectordb.persist()
+    
+    
     retriever = vectordb.as_retriever()
 
     return retriever
 
-def create_qa_chain(retriever):
-    
+def create_qa_chain(retriever):    
     qa_chain = RetrievalQA.from_chain_type(
-        llm=OpenAI(),
+        llm=OpenAI(temperature=0.4),
         chain_type="stuff",
         retriever=retriever,
         return_source_documents=True
