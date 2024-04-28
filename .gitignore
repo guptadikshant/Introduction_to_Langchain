@@ -5,6 +5,7 @@ __pycache__/
 .vscode/
 .idea/
 db/
+chroma/
 # C extensions
 *.so
 
