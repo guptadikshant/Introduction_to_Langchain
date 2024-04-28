@@ -1,12 +1,13 @@
 import os
 import zipfile
 
-from langchain.chains.retrieval_qa.base import RetrievalQA
+from langchain.prompts.prompt import PromptTemplate
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain.chains.combine_documents.stuff import create_stuff_documents_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.chroma import Chroma
 from langchain_community.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_openai import OpenAI, OpenAIEmbeddings
-from langchain.memory.buffer import ConversationBufferMemory
 
 
 def extract_zip(zip_file_path, extract_path):
@@ -32,8 +33,8 @@ def create_embeddings_and_store_vectordb(texts):
     persist_directory=os.path.abspath(persist_dir), 
     embedding_function=openai_embedding
 )
-    
     if vectordb._collection.count() == 0:
+        print("Collections not present in database. Creating new vector database")
         vectordb = Chroma.from_documents(
             documents=texts,
             embedding=openai_embedding,
@@ -49,13 +50,25 @@ def create_embeddings_and_store_vectordb(texts):
     return retriever
 
 def create_qa_chain(retriever):    
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=OpenAI(temperature=0.4),
-        chain_type="stuff",
-        retriever=retriever,
-        return_source_documents=True
-)
-    return qa_chain
+    llm_model = OpenAI(temperature=0.4)
+    prompt = PromptTemplate.from_template(
+        template="""
+            Answer the questions based on the provided context only.
+            Please provide the most accurate response based on the question
+            <context>
+            {context}
+            <context>
+            Questions:{input}
+        """
+    )
+
+    document_chain = create_stuff_documents_chain(llm=llm_model, prompt=prompt)
+
+    retrieval_chain = create_retrieval_chain(retriever=retriever, combine_docs_chain=document_chain)
+
+    return retrieval_chain
+
+
     
 def rag_pipeline(dir_path):
     docs = read_pdfs(dir_path)

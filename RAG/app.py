@@ -16,5 +16,5 @@ if input_text and "rag_qa_chain" not in st.session_state:
 
 if "rag_qa_chain" in st.session_state:
     rag_chain = st.session_state.rag_qa_chain
-    llm_response = rag_chain.invoke({"query": input_text})
-    st.write(llm_response["result"])
+    llm_response = rag_chain.invoke({"input": input_text})
+    st.write(llm_response["answer"])
