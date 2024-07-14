@@ -10,3 +10,4 @@ chromadb
 streamlit
 python-dotenv
 pypdf
+langchain-groq

@@ -1,5 +1,5 @@
 import os
-from langchain_openai import OpenAI
+from langchain_openai import OpenAI, ChatOpenAI
 from langchain.memory.buffer import ConversationBufferMemory
 from langchain.prompts import PromptTemplate, FewShotPromptTemplate
 from langchain.chains.llm import LLMChain
@@ -17,10 +17,10 @@ load_dotenv(find_dotenv())
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
 
 # intialize the model
-llm_model = OpenAI(
-    model="gpt-3.5-turbo-instruct",
+llm_model = ChatOpenAI(
+    model="gpt-3.5-turbo",
     temperature=0.4,
-    max_tokens=1500
+    max_tokens=1500,
 )
 
 # intialize the Memory
@@ -30,15 +30,16 @@ memory = ConversationBufferMemory()
 example_travel_prompt = PromptTemplate(
     input_variables=["travel_query", "travel_response"],
     template="""
-        Role: You are an intelligent Travel Agent Advisor whose job is to plan a trip based on the source and destination provided by the customer query.
-        Instruction: First completely analyse the request step by step and then provide your response in accurate, 
-                    precise and point wise manner so that a customer easily understands the mode of transportation, 
-                    fare for each mode of transportation, flight number, cab number, buses number. 
-                    Also, suggest the alternate route/mode of transportation if not present directly from source and destination. 
-                    Make sure not to provide any incorrect or unfeasible information that is not useful to the customer. 
-        Query: {travel_query}
-        Response: {travel_response}
-""",
+    Role: You are an intelligent Travel Agent Advisor whose job is to plan a trip based on the source and 
+    destination provided by the customer query. 
+    Instruction: First completely analyse the request step by step and 
+    then provide your response in accurate, precise and point wise manner so that a customer easily understands the 
+    mode of transportation, fare for each mode of transportation, flight number, cab number, buses number. Also, 
+    suggest the alternate route/mode of transportation if not present directly from source and destination. Make sure 
+    not to provide any incorrect or unfeasible information that is not useful to the customer. 
+    Query: {travel_query} 
+    Response: {travel_response}
+    """
 )
 
 # Intialize few short template with examples
