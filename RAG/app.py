@@ -8,7 +8,11 @@ load_dotenv(find_dotenv())
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
 
 st.title("RAG Based Research QA Bot")
-input_text = st.text_input(label="Enter your questions here.")    
+st.subheader("This is subheader heading")
+
+input_text = st.text_input(label="Enter your questions here.")  
+
+
 
 if input_text and "rag_qa_chain" not in st.session_state:
     st.session_state.rag_qa_chain = rag_pipeline(os.path.join(os.getcwd(), "RAG", "ml_research_papers"))

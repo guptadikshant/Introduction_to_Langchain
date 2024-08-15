@@ -11,22 +11,22 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-load_dotenv(find_dotenv())
+load_dotenv(r"F:\PlayGround\GEN_AI\Introduction_to_Langchain\.env")
 
 # load the API Key
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "")
 
-# intialize the model
+# initialize the model
 llm_model = ChatOpenAI(
-    model="gpt-3.5-turbo",
+    model="gpt-4o",
     temperature=0.4,
     max_tokens=1500,
 )
 
-# intialize the Memory
+# initialize the Memory
 memory = ConversationBufferMemory()
 
-# Intialize the Prompt example
+# Initialize the Prompt example
 example_travel_prompt = PromptTemplate(
     input_variables=["travel_query", "travel_response"],
     template="""
@@ -42,7 +42,7 @@ example_travel_prompt = PromptTemplate(
     """
 )
 
-# Intialize few short template with examples
+# Initialize few short template with examples
 few_shot_prompt = FewShotPromptTemplate(
     examples=FEW_SHOT_EXAMPLE,
     example_prompt=example_travel_prompt,
@@ -59,7 +59,7 @@ travel_chain = LLMChain(
 
 # Set the page name
 st.set_page_config(page_title="Gen AI based Travel Advisor")
-# intialize the streamlit app
+# initialize the streamlit app
 st.title("Travel Advisor ✈️🧳")
 
 
